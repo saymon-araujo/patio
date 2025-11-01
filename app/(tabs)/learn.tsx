@@ -1,3 +1,4 @@
+import { Header } from "@/components/navigation/header";
 import { Alert, AlertIcon, AlertText } from "@/components/ui/alert";
 import { Avatar, AvatarFallbackText } from "@/components/ui/avatar";
 import { Badge, BadgeText } from "@/components/ui/badge";
@@ -19,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { VStack } from "@/components/ui/vstack";
-import { AlertTriangle, Check, CircleAlert, Info } from "lucide-react-native";
+import { AlertTriangle, Bell, Check, CircleAlert, Info, Settings } from "lucide-react-native";
 import React, { useState } from "react";
 
 export default function HomeScreen() {
@@ -29,8 +30,24 @@ export default function HomeScreen() {
   const [sliderValue, setSliderValue] = useState(50);
 
   return (
-    <SafeAreaView className="flex-1 bg-background-50">
-      <ScrollView className="flex-1">
+    <Box className="flex-1 bg-white">
+      <SafeAreaView edges={['top']} className="bg-white">
+        <Header
+          showLogo={true}
+          actions={[
+            {
+              icon: Bell,
+              onPress: () => console.log("Notifications"),
+              showBadge: true,
+            },
+            {
+              icon: Settings,
+              onPress: () => console.log("Settings"),
+            },
+          ]}
+        />
+      </SafeAreaView>
+      <ScrollView className="flex-1 bg-background-50">
         <VStack className="p-6 gap-6">
           {/* Header */}
           <VStack className="gap-2">
@@ -51,19 +68,43 @@ export default function HomeScreen() {
             </Heading>
             <Card>
               <VStack className="gap-3">
-                <Heading size="5xl" className="text-typography-950">Heading 5XL</Heading>
-                <Heading size="4xl" className="text-typography-950">Heading 4XL</Heading>
-                <Heading size="3xl" className="text-typography-950">Heading 3XL</Heading>
-                <Heading size="2xl" className="text-typography-950">Heading 2XL</Heading>
-                <Heading size="xl" className="text-typography-900">Heading XL</Heading>
-                <Heading size="lg" className="text-typography-900">Heading LG</Heading>
+                <Heading size="5xl" className="text-typography-950">
+                  Heading 5XL
+                </Heading>
+                <Heading size="4xl" className="text-typography-950">
+                  Heading 4XL
+                </Heading>
+                <Heading size="3xl" className="text-typography-950">
+                  Heading 3XL
+                </Heading>
+                <Heading size="2xl" className="text-typography-950">
+                  Heading 2XL
+                </Heading>
+                <Heading size="xl" className="text-typography-900">
+                  Heading XL
+                </Heading>
+                <Heading size="lg" className="text-typography-900">
+                  Heading LG
+                </Heading>
                 <Divider className="my-2 bg-outline-200" />
-                <Text size="2xl" className="text-typography-900">Text 2XL - Regular body text</Text>
-                <Text size="xl" className="text-typography-700">Text XL - Regular body text</Text>
-                <Text size="lg" className="text-typography-700">Text LG - Regular body text</Text>
-                <Text size="md" className="text-typography-600">Text MD - Regular body text</Text>
-                <Text size="sm" className="text-typography-500">Text SM - Regular body text</Text>
-                <Text size="xs" className="text-typography-500">Text XS - Regular body text</Text>
+                <Text size="2xl" className="text-typography-900">
+                  Text 2XL - Regular body text
+                </Text>
+                <Text size="xl" className="text-typography-700">
+                  Text XL - Regular body text
+                </Text>
+                <Text size="lg" className="text-typography-700">
+                  Text LG - Regular body text
+                </Text>
+                <Text size="md" className="text-typography-600">
+                  Text MD - Regular body text
+                </Text>
+                <Text size="sm" className="text-typography-500">
+                  Text SM - Regular body text
+                </Text>
+                <Text size="xs" className="text-typography-500">
+                  Text XS - Regular body text
+                </Text>
                 <Divider className="my-2 bg-outline-200" />
                 <Text className="font-bold text-typography-900">Bold Text</Text>
                 <Text className="italic text-typography-700">Italic Text</Text>
@@ -342,7 +383,9 @@ export default function HomeScreen() {
                   <Text className="font-semibold text-typography-700">Nested Cards</Text>
                   <Card variant="filled">
                     <VStack className="gap-3">
-                      <Heading size="md" className="text-typography-950">Parent Card</Heading>
+                      <Heading size="md" className="text-typography-950">
+                        Parent Card
+                      </Heading>
                       <Card variant="elevated">
                         <Text className="text-typography-700">Nested white card with shadow</Text>
                       </Card>
@@ -367,6 +410,6 @@ export default function HomeScreen() {
           </Box>
         </VStack>
       </ScrollView>
-    </SafeAreaView>
+    </Box>
   );
 }
