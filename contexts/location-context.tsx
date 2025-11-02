@@ -14,6 +14,7 @@ export interface Coordinates {
 
 interface LocationContextValue {
   coordinates: Coordinates | null;
+  userLocation: { lat: number; lng: number } | null; // Alias for distance calculator
   permissionStatus: Location.PermissionStatus | null;
   isLoading: boolean;
   requestPermission: () => Promise<boolean>;
@@ -108,10 +109,16 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     setCoordinates(coords);
   };
 
+  // Create userLocation alias for distance calculator
+  const userLocation = coordinates
+    ? { lat: coordinates.latitude, lng: coordinates.longitude }
+    : null;
+
   return (
     <LocationContext.Provider
       value={{
         coordinates,
+        userLocation,
         permissionStatus,
         isLoading,
         requestPermission,

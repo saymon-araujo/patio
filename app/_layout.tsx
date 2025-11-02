@@ -22,6 +22,8 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { LocationProvider } from "@/contexts/location-context";
 import { LearnProvider } from "@/contexts/learn-context";
 import { GamificationProvider } from "@/contexts/gamification-context";
+import { MarketplaceProvider } from "@/contexts/marketplace-context";
+import { BookingProvider } from "@/contexts/booking-context";
 import "@/global.css";
 
 // Prevent the splash screen from auto-hiding
@@ -62,13 +64,17 @@ export default function RootLayout() {
           <LocationProvider>
             <LearnProvider>
               <GamificationProvider>
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="index" />
-                  <Stack.Screen name="(auth)" />
-                  <Stack.Screen name="(tabs)" />
-                  <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
-                </Stack>
-                <StatusBar style="dark" />
+                <MarketplaceProvider>
+                  <BookingProvider>
+                    <Stack screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="index" />
+                      <Stack.Screen name="(auth)" />
+                      <Stack.Screen name="(tabs)" />
+                      <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
+                    </Stack>
+                    <StatusBar style="dark" />
+                  </BookingProvider>
+                </MarketplaceProvider>
               </GamificationProvider>
             </LearnProvider>
           </LocationProvider>

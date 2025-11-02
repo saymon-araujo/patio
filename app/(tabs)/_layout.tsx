@@ -19,11 +19,19 @@ export default function TabLayout() {
 
   // Hide tab bar on nested routes
   const shouldHideTabBar =
+    // Learn tab nested routes
     pathname.includes('/course/') ||
     pathname.includes('/lesson/') ||
     pathname.includes('/quiz/') ||
     pathname.includes('/leaderboard') ||
-    pathname.includes('/saved');
+    pathname.includes('/saved') ||
+    // Marketplace tab nested routes
+    pathname.includes('/listing/') ||
+    pathname.includes('/create') ||
+    pathname.includes('/book/') ||
+    pathname.includes('/checkout/') ||
+    pathname.includes('/orders') ||
+    pathname.includes('/map');
 
   return (
     <>
