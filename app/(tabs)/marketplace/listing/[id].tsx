@@ -30,12 +30,25 @@ import {
 } from 'lucide-react-native';
 import { getListingById } from '@/utils/mock-data/listings';
 import { useMarketplace } from '@/contexts/marketplace-context';
+import { PhotoGallery } from '@/components/marketplace/listing/photo-gallery';
+import { CalendarPickerComponent } from '@/components/marketplace/shared/calendar-picker';
+import { ReviewsList } from '@/components/marketplace/listing/reviews-list';
+import {
+  getReviewsByListingId,
+  calculateAverageRating,
+  getRatingDistribution,
+} from '@/utils/mock-data/listing-reviews';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const listing = getListingById(id!);
   const { isSaved, saveListing, unsaveListing } = useMarketplace();
   const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'reviews'>('overview');
+
+  // Get reviews data
+  const reviews = listing ? getReviewsByListingId(listing.id) : [];
+  const averageRating = listing ? calculateAverageRating(listing.id) : 0;
+  const ratingDistribution = listing ? getRatingDistribution(listing.id) : { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
   if (!listing) {
     return (
@@ -89,14 +102,8 @@ export default function ListingDetailScreen() {
 
       <ScrollView className="flex-1">
         <VStack className="pb-24">
-          {/* Photo Gallery Placeholder */}
-          <Box className="w-full h-64 bg-background-100">
-            <Box className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 rounded">
-              <Text size="xs" className="text-white">
-                1 / {listing.photos.length}
-              </Text>
-            </Box>
-          </Box>
+          {/* Photo Gallery */}
+          <PhotoGallery photos={listing.photos} video={listing.video} height={280} />
 
           {/* Main Content */}
           <VStack className="p-4 gap-4">
@@ -284,12 +291,34 @@ export default function ListingDetailScreen() {
                           Available Now
                         </Text>
                         <Text size="sm" className="text-typography-600">
-                          Check calendar for availability
+                          Check calendar below for specific dates
                         </Text>
                       </VStack>
                     </HStack>
                   )}
                 </VStack>
+
+                {/* Availability Calendar (Rental Only) */}
+                {listing.type === 'rental' && (
+                  <VStack className="gap-3">
+                    <Heading size="md" className="text-typography-950">
+                      Availability
+                    </Heading>
+                    <CalendarPickerComponent
+                      startDate={null}
+                      endDate={null}
+                      onDateChange={() => {}}
+                      blockedDates={
+                        listing.availability?.blackoutDates?.map((date) => new Date(date)) || []
+                      }
+                      allowRangeSelection={true}
+                      minDate={new Date()}
+                    />
+                    <Text size="sm" className="text-typography-500">
+                      Gray dates are unavailable. Select your dates to book.
+                    </Text>
+                  </VStack>
+                )}
               </VStack>
             )}
 
@@ -339,34 +368,11 @@ export default function ListingDetailScreen() {
 
             {/* Reviews Tab */}
             {activeTab === 'reviews' && (
-              <VStack className="gap-4">
-                <HStack className="items-center justify-between">
-                  <Heading size="md" className="text-typography-950">
-                    Reviews
-                  </Heading>
-                  <HStack className="items-center gap-1">
-                    <Star size={18} className="text-warning-500" fill="#F97316" />
-                    <Text className="font-semibold text-typography-950">
-                      {listing.rating}
-                    </Text>
-                    <Text size="sm" className="text-typography-500">
-                      ({listing.reviewCount})
-                    </Text>
-                  </HStack>
-                </HStack>
-
-                {listing.reviewCount === 0 ? (
-                  <Box className="p-8 items-center">
-                    <Text className="text-typography-500 text-center">
-                      No reviews yet. Be the first to review!
-                    </Text>
-                  </Box>
-                ) : (
-                  <Text className="text-typography-500 text-center">
-                    Reviews component coming soon
-                  </Text>
-                )}
-              </VStack>
+              <ReviewsList
+                reviews={reviews}
+                averageRating={averageRating}
+                ratingDistribution={ratingDistribution}
+              />
             )}
           </VStack>
         </VStack>

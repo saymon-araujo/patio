@@ -24,22 +24,25 @@ import {
 import { router } from "expo-router";
 import { Filter, Map as MapIcon, Plus, Search } from "lucide-react-native";
 import React, { useState } from "react";
+import { FilterModal } from "@/components/marketplace/browse/filter-modal";
+import { SearchModal } from "@/components/marketplace/browse/search-modal";
+import { ListingCard } from "@/components/marketplace/listing/listing-card";
 
 type TabType = "nearby" | "trending" | "categories" | "for-you";
 
 export default function MarketplaceBrowseScreen() {
   const [activeTab, setActiveTab] = useState<TabType>("nearby");
-  const { filters } = useMarketplace();
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const { filters, updateFilters } = useMarketplace();
   const { userLocation } = useLocation();
 
   const handleSearch = () => {
-    // Will open search modal (to be implemented)
-    console.log("Open search");
+    setShowSearchModal(true);
   };
 
   const handleFilter = () => {
-    // Will open filter modal (to be implemented)
-    console.log("Open filters");
+    setShowFilterModal(true);
   };
 
   const handleCreateListing = () => {
@@ -197,36 +200,7 @@ export default function MarketplaceBrowseScreen() {
                   </Box>
                 ) : (
                   displayedListings.map((listing) => (
-                    <Pressable
-                      key={listing.id}
-                      onPress={() => router.push(`/marketplace/listing/${listing.id}`)}
-                    >
-                      <Box className="bg-white rounded-lg p-4 border border-outline-200">
-                        <HStack className="gap-3">
-                          <Box className="w-20 h-20 bg-background-100 rounded-lg" />
-                          <VStack className="flex-1 gap-1">
-                            <Text className="font-semibold text-typography-950">
-                              {listing.title}
-                            </Text>
-                            <Text size="sm" className="text-typography-600">
-                              {listing.category}
-                            </Text>
-                            <HStack className="items-center gap-2">
-                              <Text className="font-bold text-primary-600">
-                                {listing.type === "rental"
-                                  ? `$${listing.dailyRate}/day`
-                                  : `$${listing.price}`}
-                              </Text>
-                              {'distance' in listing && (
-                                <Text size="xs" className="text-typography-500">
-                                  • {(listing as any).distance} mi
-                                </Text>
-                              )}
-                            </HStack>
-                          </VStack>
-                        </HStack>
-                      </Box>
-                    </Pressable>
+                    <ListingCard key={listing.id} listing={listing} />
                   ))
                 )}
               </VStack>
@@ -240,32 +214,7 @@ export default function MarketplaceBrowseScreen() {
                 Trending This Week
               </Heading>
               {displayedListings.map((listing) => (
-                <Pressable
-                  key={listing.id}
-                  onPress={() => router.push(`/marketplace/listing/${listing.id}`)}
-                >
-                  <Box className="bg-white rounded-lg p-4 border border-outline-200">
-                    <HStack className="gap-3">
-                      <Box className="w-20 h-20 bg-background-100 rounded-lg" />
-                      <VStack className="flex-1 gap-1">
-                        <Text className="font-semibold text-typography-950">{listing.title}</Text>
-                        <Text size="sm" className="text-typography-600">
-                          {listing.category}
-                        </Text>
-                        <HStack className="items-center gap-2">
-                          <Text className="font-bold text-primary-600">
-                            {listing.type === "rental"
-                              ? `$${listing.dailyRate}/day`
-                              : `$${listing.price}`}
-                          </Text>
-                          <Text size="xs" className="text-typography-500">
-                            • {listing.views} views
-                          </Text>
-                        </HStack>
-                      </VStack>
-                    </HStack>
-                  </Box>
-                </Pressable>
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </VStack>
           )}
@@ -303,36 +252,7 @@ export default function MarketplaceBrowseScreen() {
                 Based on your learning progress and interests
               </Text>
               {displayedListings.map((listing) => (
-                <Pressable
-                  key={listing.id}
-                  onPress={() => router.push(`/marketplace/listing/${listing.id}`)}
-                >
-                  <Box className="bg-white rounded-lg p-4 border border-outline-200">
-                    <HStack className="gap-3">
-                      <Box className="w-20 h-20 bg-background-100 rounded-lg" />
-                      <VStack className="flex-1 gap-1">
-                        <Text className="font-semibold text-typography-950">{listing.title}</Text>
-                        <Text size="sm" className="text-typography-600">
-                          {listing.category}
-                        </Text>
-                        <HStack className="items-center gap-2">
-                          <Text className="font-bold text-primary-600">
-                            {listing.type === "rental"
-                              ? `$${listing.dailyRate}/day`
-                              : `$${listing.price}`}
-                          </Text>
-                          {listing.isNew && (
-                            <Box className="px-2 py-0.5 bg-success-50 rounded">
-                              <Text size="xs" className="text-success-700 font-semibold">
-                                NEW
-                              </Text>
-                            </Box>
-                          )}
-                        </HStack>
-                      </VStack>
-                    </HStack>
-                  </Box>
-                </Pressable>
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </VStack>
           )}
@@ -347,6 +267,19 @@ export default function MarketplaceBrowseScreen() {
           </Box>
         </Pressable>
       </Box>
+
+      {/* Modals */}
+      <FilterModal
+        isOpen={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        filters={filters}
+        onApply={updateFilters}
+      />
+
+      <SearchModal
+        isOpen={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
+      />
     </Box>
   );
 }

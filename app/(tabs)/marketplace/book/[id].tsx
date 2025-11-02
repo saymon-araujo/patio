@@ -24,6 +24,9 @@ import { getListingById } from '@/utils/mock-data/listings';
 import { calculateRentalPrice, calculateDaysBetween } from '@/utils/price-calculator';
 import { mockCreateBooking, generateMockQRCode } from '@/utils/mock-data/bookings';
 import { useBooking } from '@/contexts/booking-context';
+import { CalendarPickerComponent } from '@/components/marketplace/shared/calendar-picker';
+import { AddOnSelector } from '@/components/marketplace/listing/addon-selector';
+import { InsuranceCard } from '@/components/marketplace/listing/insurance-card';
 
 type Step = 'dates' | 'options' | 'payment' | 'confirmation';
 
@@ -36,8 +39,8 @@ export default function BookingFlowScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Booking data
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery' | 'meet-halfway'>('pickup');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [includeInsurance, setIncludeInsurance] = useState(false);
@@ -55,7 +58,7 @@ export default function BookingFlowScreen() {
     );
   }
 
-  const days = startDate && endDate ? calculateDaysBetween(new Date(startDate), new Date(endDate)) : 0;
+  const days = startDate && endDate ? calculateDaysBetween(startDate, endDate) : 0;
 
   const selectedAddonsData = (listing.addons || []).filter((addon) =>
     selectedAddons.includes(addon.id)
@@ -100,8 +103,8 @@ export default function BookingFlowScreen() {
         listingId: listing.id,
         renterId: 'current-user',
         ownerId: listing.ownerId,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        startDate: startDate!,
+        endDate: endDate!,
         duration: days,
         dailyRate: listing.dailyRate!,
         totalRentalCost: priceBreakdown.rentalCost,
@@ -166,41 +169,26 @@ export default function BookingFlowScreen() {
           {/* Step 1: Dates */}
           {currentStep === 'dates' && (
             <VStack className="gap-4">
-              <Heading size="lg" className="text-typography-950">
-                When do you need this tool?
-              </Heading>
-
-              <VStack className="gap-3">
-                <VStack className="gap-1">
-                  <Text className="font-semibold text-typography-700">Start Date</Text>
-                  <Input>
-                    <InputField
-                      value={startDate}
-                      onChangeText={setStartDate}
-                      placeholder="YYYY-MM-DD"
-                    />
-                  </Input>
-                </VStack>
-
-                <VStack className="gap-1">
-                  <Text className="font-semibold text-typography-700">End Date</Text>
-                  <Input>
-                    <InputField
-                      value={endDate}
-                      onChangeText={setEndDate}
-                      placeholder="YYYY-MM-DD"
-                    />
-                  </Input>
-                </VStack>
-
-                {days > 0 && (
-                  <Box className="bg-primary-50 p-3 rounded-lg">
-                    <Text className="text-primary-700">
-                      Rental duration: <Text className="font-bold">{days} days</Text>
-                    </Text>
-                  </Box>
-                )}
+              <VStack className="gap-2">
+                <Heading size="lg" className="text-typography-950">
+                  When do you need this tool?
+                </Heading>
+                <Text className="text-typography-600">
+                  Select your rental start and end dates
+                </Text>
               </VStack>
+
+              <CalendarPickerComponent
+                startDate={startDate}
+                endDate={endDate}
+                onDateChange={(start, end) => {
+                  setStartDate(start);
+                  setEndDate(end);
+                }}
+                allowRangeSelection={true}
+                minDate={new Date()}
+                blockedDates={[]} // TODO: Get from listing's blocked dates
+              />
             </VStack>
           )}
 
@@ -274,28 +262,11 @@ export default function BookingFlowScreen() {
               </VStack>
 
               {listing.insuranceAvailable && (
-                <VStack className="gap-3">
-                  <Heading size="lg" className="text-typography-950">
-                    Protection
-                  </Heading>
-                  <Checkbox
-                    value="insurance"
-                    isChecked={includeInsurance}
-                    onChange={setIncludeInsurance}
-                  >
-                    <CheckboxIndicator>
-                      <CheckboxIcon as={CheckIcon} />
-                    </CheckboxIndicator>
-                    <CheckboxLabel>
-                      <VStack>
-                        <Text className="font-semibold">Add Insurance</Text>
-                        <Text size="sm" className="text-typography-500">
-                          $3/day - Covers damage and theft
-                        </Text>
-                      </VStack>
-                    </CheckboxLabel>
-                  </Checkbox>
-                </VStack>
+                <InsuranceCard
+                  isSelected={includeInsurance}
+                  onToggle={setIncludeInsurance}
+                  days={days}
+                />
               )}
 
               {listing.addons && listing.addons.length > 0 && (
@@ -303,34 +274,11 @@ export default function BookingFlowScreen() {
                   <Heading size="lg" className="text-typography-950">
                     Add-ons
                   </Heading>
-                  <VStack className="gap-2">
-                    {listing.addons.map((addon) => (
-                      <Checkbox
-                        key={addon.id}
-                        value={addon.id}
-                        isChecked={selectedAddons.includes(addon.id)}
-                        onChange={(checked) => {
-                          if (checked) {
-                            setSelectedAddons([...selectedAddons, addon.id]);
-                          } else {
-                            setSelectedAddons(selectedAddons.filter((id) => id !== addon.id));
-                          }
-                        }}
-                      >
-                        <CheckboxIndicator>
-                          <CheckboxIcon as={CheckIcon} />
-                        </CheckboxIndicator>
-                        <CheckboxLabel>
-                          <HStack className="justify-between flex-1">
-                            <Text>{addon.name}</Text>
-                            <Text className="font-semibold text-primary-600">
-                              +${addon.price}
-                            </Text>
-                          </HStack>
-                        </CheckboxLabel>
-                      </Checkbox>
-                    ))}
-                  </VStack>
+                  <AddOnSelector
+                    addons={listing.addons}
+                    selectedAddonIds={selectedAddons}
+                    onSelectionChange={setSelectedAddons}
+                  />
                 </VStack>
               )}
             </VStack>

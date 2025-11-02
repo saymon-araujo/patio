@@ -108,6 +108,29 @@ export default function OrdersScreen() {
             )}
           </HStack>
 
+          {/* Quick Actions */}
+          {booking.status === 'confirmed' && (
+            <HStack className="gap-2">
+              <Button size="sm" variant="outline" className="flex-1">
+                <ButtonText>Message Owner</ButtonText>
+              </Button>
+              <Button size="sm" variant="outline" className="flex-1" action="negative">
+                <ButtonText>Cancel</ButtonText>
+              </Button>
+            </HStack>
+          )}
+
+          {booking.status === 'active' && (
+            <HStack className="gap-2">
+              <Button size="sm" variant="outline" className="flex-1">
+                <ButtonText>Extend Rental</ButtonText>
+              </Button>
+              <Button size="sm" variant="outline" className="flex-1" action="negative">
+                <ButtonText>Report Issue</ButtonText>
+              </Button>
+            </HStack>
+          )}
+
           {booking.status === 'completed' && !booking.renterReviewed && (
             <Button size="sm" variant="outline">
               <ButtonText>Leave Review</ButtonText>
@@ -151,6 +174,24 @@ export default function OrdersScreen() {
               </Text>
             )}
           </HStack>
+
+          {/* Quick Actions */}
+          {order.status === 'paid' && (
+            <HStack className="gap-2">
+              <Button size="sm" variant="outline" className="flex-1">
+                <ButtonText>Message Seller</ButtonText>
+              </Button>
+              <Button size="sm" variant="outline" className="flex-1" action="negative">
+                <ButtonText>Cancel Order</ButtonText>
+              </Button>
+            </HStack>
+          )}
+
+          {order.status === 'shipped' && order.trackingNumber && (
+            <Button size="sm" variant="outline">
+              <ButtonText>Track Shipment</ButtonText>
+            </Button>
+          )}
 
           {(order.status === 'delivered' || order.status === 'completed') &&
             !order.buyerReviewed && (
