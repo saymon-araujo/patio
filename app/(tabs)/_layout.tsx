@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import { BookOpen, ShoppingBag, Sparkles, User, Users } from "lucide-react-native";
 import React from "react";
 import { Platform } from "react-native";
@@ -15,6 +15,16 @@ const TabIcon = ({
 }) => <IconComponent color={color} size={22} strokeWidth={focused ? 2.5 : 2} />;
 
 export default function TabLayout() {
+  const pathname = usePathname();
+
+  // Hide tab bar on nested routes
+  const shouldHideTabBar =
+    pathname.includes('/course/') ||
+    pathname.includes('/lesson/') ||
+    pathname.includes('/quiz/') ||
+    pathname.includes('/leaderboard') ||
+    pathname.includes('/saved');
+
   return (
     <>
       <Tabs
@@ -22,7 +32,7 @@ export default function TabLayout() {
           tabBarActiveTintColor: "#0066FF", // primary-500
           tabBarInactiveTintColor: "#9CA3AF", // lighter gray for better contrast
           headerShown: false,
-          tabBarStyle: {
+          tabBarStyle: shouldHideTabBar ? { display: 'none' } : {
             backgroundColor: "#FFFFFF",
             borderTopWidth: 1,
             borderTopColor: "#F3F4F6", // subtle border

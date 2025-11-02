@@ -61,8 +61,8 @@ export function Header({
   // Navigation variant: Back button + Title
   if (variant === "navigation") {
     return (
-      <Box className="bg-white border-b border-outline-800 shadow-md px-4 pt-3 pb-3">
-        <HStack className="items-center justify-between">
+      <Box className="bg-white border-b border-outline-100 px-4 pt-3 pb-3">
+        <HStack className="items-center justify-between gap-3">
           {/* Left: Back Button */}
           <Pressable
             onPress={handleBack}
@@ -78,6 +78,21 @@ export function Header({
           >
             {title}
           </Heading>
+
+          {/* Right: Action Icons (if provided) */}
+          {actions.length > 0 && (
+            <HStack className="gap-1">
+              {actions.map((action, index) => (
+                <HeaderAction
+                  key={index}
+                  icon={action.icon}
+                  onPress={action.onPress}
+                  showBadge={action.showBadge}
+                  badgeCount={action.badgeCount}
+                />
+              ))}
+            </HStack>
+          )}
         </HStack>
       </Box>
     );

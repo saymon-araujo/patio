@@ -20,6 +20,8 @@ import "react-native-reanimated";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { LocationProvider } from "@/contexts/location-context";
+import { LearnProvider } from "@/contexts/learn-context";
+import { GamificationProvider } from "@/contexts/gamification-context";
 import "@/global.css";
 
 // Prevent the splash screen from auto-hiding
@@ -58,13 +60,17 @@ export default function RootLayout() {
       <ThemeProvider value={DefaultTheme}>
         <AuthProvider>
           <LocationProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
-            </Stack>
-            <StatusBar style="dark" />
+            <LearnProvider>
+              <GamificationProvider>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="(auth)" />
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
+                </Stack>
+                <StatusBar style="dark" />
+              </GamificationProvider>
+            </LearnProvider>
           </LocationProvider>
         </AuthProvider>
       </ThemeProvider>
